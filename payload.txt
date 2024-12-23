@@ -1,0 +1,51 @@
+{
+    "DocEntry": 0,
+    "DocNum": null,
+    "DocType": "rCustomer",
+    "DocDate": "2024-11-06T00:00:00",
+    "CardCode": "Cust-000163",
+    "CardName": "Zahid Aziz Mughal",
+    "CashAccount": null,
+    "CashSum": 0,
+    "CheckAccount": "_SYS00000000021",
+    "TransferAccount": null,
+    "TransferSum": 0,
+    "TransferDate": null,
+    "TransferReference": null,
+    "Reference1": null,
+    "Reference2": null,
+    "CounterReference": null,
+    "Remarks": null,
+    "JournalRemarks": null,
+    "SplitTransaction": "tNO",
+    "TaxDate": "2024-10-28T00:00:00",
+    "Series": 15,
+    "BankCode": null,
+    "BankAccount": null,
+    "TransferRealAmount": 0,
+    "DocTypte": "rCustomer",
+    "DueDate": "2024-10-31T00:00:00",
+    "AttachmentEntry": null,
+    "U_Channel": null,
+    "PaymentInvoices": [
+        {
+            "LineNum": 0,
+            "DocEntry": 1632,
+            "SumApplied": 500,
+            "DistributionRule": null,
+            "InvoiceType": "it_Invoice",
+            "InstallmentId": 1
+        }
+    ],
+    "PaymentChecks": [
+        {
+            "DueDate": "2024-10-31T00:00:00",
+            "CheckNumber": "1",
+            "CheckSum": "500",
+            "AccountNum": null,
+            "CheckAccount": "_SYS00000000021",
+            "BankCode": "MIB"
+        }
+    ],
+    "PaymentAccounts": []
+}

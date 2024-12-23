@@ -1,0 +1,161 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.loader-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 9999;
+  backdrop-filter: blur(5px);
+  background-color: #fff;
+}
+
+.fading-bars {
+  display: flex;
+  justify-content: space-between;
+  width: 80px;
+}
+
+.bar {
+  width: 10px;
+  height: 40px;
+  background-color: #fde047; /* Custom yellow color */
+  animation: fade 1s infinite;
+  border-radius: 5px; /* Slightly rounded corners */
+}
+
+.bar:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.bar:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.bar:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+.bar:nth-child(4) {
+  animation-delay: 0.6s;
+}
+
+.bar:nth-child(5) {
+  animation-delay: 0.8s;
+}
+
+.loading-text {
+  margin-top: 20px;
+  font-size: 1.25rem; /* Larger text */
+  font-weight: bold; /* Bold text */
+  color: #374151; /* Cool gray color */
+  text-align: center;
+  animation: textFade 1s infinite;
+}
+
+@keyframes fade {
+  0%,
+  100% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes textFade {
+  0%,
+  100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* For Chrome, Safari, Edge, and Opera */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* For Firefox */
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+.input-with-currency {
+  position: relative;
+}
+
+.input-with-currency input {
+  padding-left: 1.5rem; /* Adjust padding to accommodate the currency label */
+}
+
+.input-with-currency::before {
+  content: "PKR";
+  position: absolute;
+  left: 1px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.75rem;
+}
+
+/* Hide the PKR label when there's no value */
+.no-currency-label::before {
+  opacity: 0;
+}
+
+.window-controls {
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+}
+
+.mac-controls {
+  right: 0;
+}
+
+.control-btn {
+  width: 16px;
+  height: 16px;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.control-btn:hover {
+  filter: brightness(1.2);
+}
+
+/* width */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #d6d3d1;
+  border-radius: 2px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
