@@ -205,6 +205,10 @@ function TableProvider({ children }) {
   const [paymentOnAccount, setPaymentOnAccount] = useState("0.0000");
   const [bankCharge, setBankCharge] = useState(null);
 
+  const getToken = () => {
+    return localStorage.getItem("token") || token;
+  };
+
   useEffect(() => {
     // This effect will run when the component mounts (or page reloads).
     setRowsToDisplayState((prevRows) => {
@@ -566,7 +570,7 @@ function TableProvider({ children }) {
                 `${SERVER_ADDRESS}api/Common/GetNextDocNum/${table}/${seriesCode}`,
                 {
                   headers: {
-                    Authorization: `Bearer ${token}`,
+                    Authorization: `Bearer ${getToken()}`,
                   },
                 }
               );
@@ -771,6 +775,8 @@ function TableProvider({ children }) {
     setTotal(null);
 
     setDocumentNumber(null);
+
+    setOperation("find");
 
     if (docNumRef.current) {
       docNumRef.current.focus(); // Set focus on the No. field

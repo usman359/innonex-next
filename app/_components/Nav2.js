@@ -86,6 +86,10 @@ export default function Nav2() {
     setFreightTotal,
   } = useTable();
 
+  const getToken = () => {
+    return localStorage.getItem("token") || token;
+  };
+
   // Local states to temporarily hold selected dates and modal data
   const [tempFromDate, setTempFromDate] = useState(selectedFromDate);
   const [tempToDate, setTempToDate] = useState(selectedToDate);
@@ -116,7 +120,7 @@ export default function Nav2() {
   const handleModalYes = async () => {
     // resetItemData();
 
-    console.log(pendingAction);
+    // console.log(pendingAction);
     switch (pendingAction) {
       case ACTIONS.ADD:
         resetItemData();
@@ -184,15 +188,15 @@ export default function Nav2() {
         "yyyy-MM-dd'T'23:59:59"
       );
 
-      console.log(pathname);
-      console.log(isIncomingPayments);
+      // console.log(pathname);
+      // console.log(isIncomingPayments);
       const apiUrl = isIncomingPayments
         ? `${SERVER_ADDRESS}api/Payments/GetPaymentList/${orderType}/${statusParam}/${formattedToDate}/${formattedFromDate}`
         : `${SERVER_ADDRESS}api/Marketing/GetDocuments/${orderType}/${statusParam}/${formattedToDate}/${formattedFromDate}`;
 
       const response = await fetch(apiUrl, {
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${getToken()}`,
         },
       });
 
@@ -571,7 +575,7 @@ export default function Nav2() {
         `${SERVER_ADDRESS}api/Marketing/GetDocumentDetails/${orderType}/${documentNumber}`,
         {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${getToken()}`,
           },
         }
       );
