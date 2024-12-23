@@ -45,6 +45,10 @@ const ItemMasterData = () => {
     token,
   } = useTable();
 
+  const getToken = () => {
+    return localStorage.getItem("token") || token;
+  };
+
   useEffect(() => {
     localStorage.setItem("pathname", pathname.split("/").join("/"));
     const page = pathname
@@ -94,7 +98,7 @@ const ItemMasterData = () => {
               const res = await fetch(
                 `${SERVER_ADDRESS}api/Common/GetCustomers`,
                 {
-                  headers: { Authorization: `Bearer ${token}` },
+                  headers: { Authorization: `Bearer ${getToken()}` },
                 }
               );
               if (!res.ok) throw new Error("Failed to load customers");
@@ -103,6 +107,7 @@ const ItemMasterData = () => {
             } catch (error) {
               console.error(error.message);
               toast.error("Failed to load vendors.");
+              router.push("/login");
             }
           };
 
@@ -111,7 +116,7 @@ const ItemMasterData = () => {
               const res = await fetch(
                 `${SERVER_ADDRESS}api/Common/GetSeires/${orderType}`,
                 {
-                  headers: { Authorization: `Bearer ${token}` },
+                  headers: { Authorization: `Bearer ${getToken()}` },
                 }
               );
               if (!res.ok) throw new Error("Failed to load series");
@@ -121,6 +126,7 @@ const ItemMasterData = () => {
             } catch (error) {
               console.error(error.message);
               toast.error("Failed to load series.");
+              router.push("/login");
             }
           };
 
@@ -129,7 +135,7 @@ const ItemMasterData = () => {
               const res = await fetch(
                 `${SERVER_ADDRESS}api/Payments/GetPaymentList/${orderType}/${statusParam}/${formattedToDate}/${formattedFromDate}`,
                 {
-                  headers: { Authorization: `Bearer ${token}` },
+                  headers: { Authorization: `Bearer ${getToken()}` },
                 }
               );
               if (!res.ok)
@@ -141,6 +147,7 @@ const ItemMasterData = () => {
             } catch (error) {
               console.error(error.message);
               toast.error("Failed to load payments by date and form type.");
+              router.push("/login");
             }
           };
 

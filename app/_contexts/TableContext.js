@@ -205,17 +205,6 @@ function TableProvider({ children }) {
   const [paymentOnAccount, setPaymentOnAccount] = useState("0.0000");
   const [bankCharge, setBankCharge] = useState(null);
 
-  // const isTokenValid = (token) => {
-  //   try {
-  //     if (!token) return false;
-  //     const { exp } = jwtDecode(token); // Decode token to get expiration
-  //     return exp > Date.now() / 1000; // Check if the token is still valid
-  //   } catch (error) {
-  //     console.error("Invalid token", error);
-  //     return false;
-  //   }
-  // };
-
   useEffect(() => {
     // This effect will run when the component mounts (or page reloads).
     setRowsToDisplayState((prevRows) => {
@@ -501,41 +490,18 @@ function TableProvider({ children }) {
     return updatedRows;
   };
 
-  // useEffect(() => {
-  //   const storedToken = localStorage.getItem("token");
-  //   const lastPath = sessionStorage.getItem("lastPath") || "/";
+  useEffect(() => {
+    if (token) {
+      localStorage.setItem("token", token);
+    }
+  }, [token]);
 
-  //   if (storedToken && isTokenValid(storedToken)) {
-  //     saveToken(storedToken); // Save valid token
-  //     if (pathname !== lastPath) {
-  //       console.log("Restoring path:", lastPath);
-  //       router.replace(lastPath); // Use replace to prevent additional history entries
-  //     }
-  //   } else {
-  //     console.log("Invalid token");
-  //     saveToken(""); // Clear invalid token
-  //     sessionStorage.removeItem("lastPath");
-  //     router.replace("/login");
-  //   }
-  // }, []); // Run on initial render
-
-  // // Save the current path in sessionStorage
-  // useEffect(() => {
-  //   if (token && pathname) {
-  //     sessionStorage.setItem("lastPath", pathname); // Save current path
-  //     saveToken(token);
-  //   }
-  // }, [pathname, token]); // Runs only when pathname or token changes
-
-  // const saveToken = (newToken) => {
-  //   if (newToken) {
-  //     localStorage.setItem("token", newToken);
-  //     setToken(newToken);
-  //   } else {
-  //     localStorage.removeItem("token");
-  //     setToken("");
-  //   }
-  // };
+  useEffect(() => {
+    const storedToken = localStorage.getItem("token");
+    if (storedToken) {
+      setToken(storedToken);
+    }
+  }, []);
 
   useEffect(() => {
     const currentDate = format(new Date(), "yyyy-MM-dd");

@@ -54,6 +54,10 @@ const ReturnRequest = () => {
     copyToFrom,
   } = useTable();
 
+  const getToken = () => {
+    return localStorage.getItem("token") || token;
+  };
+
   useEffect(() => {
     localStorage.setItem("pathname", pathname.split("/").join("/"));
     const page = pathname
@@ -106,7 +110,7 @@ const ReturnRequest = () => {
               const res = await fetch(
                 `${SERVER_ADDRESS}api/Common/GetCustomers`,
                 {
-                  headers: { Authorization: `Bearer ${token}` },
+                  headers: { Authorization: `Bearer ${getToken()}` },
                 }
               );
               if (!res.ok) throw new Error("Failed to load customers");
@@ -115,6 +119,7 @@ const ReturnRequest = () => {
             } catch (error) {
               console.error(error.message);
               toast.error("Failed to load customers.");
+              router.push("/login");
             }
           };
 
@@ -123,7 +128,7 @@ const ReturnRequest = () => {
               const res = await fetch(
                 `${SERVER_ADDRESS}api/Common/GetSeires/${orderType}`,
                 {
-                  headers: { Authorization: `Bearer ${token}` },
+                  headers: { Authorization: `Bearer ${getToken()}` },
                 }
               );
               if (!res.ok) throw new Error("Failed to load series");
@@ -134,6 +139,7 @@ const ReturnRequest = () => {
             } catch (error) {
               console.error(error.message);
               toast.error("Failed to load series.");
+              router.push("/login");
             }
           };
 
@@ -142,7 +148,7 @@ const ReturnRequest = () => {
               const res = await fetch(
                 `${SERVER_ADDRESS}api/Common/GetAllUDFs/ORDR/RDR1`,
                 {
-                  headers: { Authorization: `Bearer ${token}` },
+                  headers: { Authorization: `Bearer ${getToken()}` },
                 }
               );
               if (!res.ok) throw new Error("Failed to load UDFs");
@@ -151,13 +157,14 @@ const ReturnRequest = () => {
             } catch (error) {
               console.error(error.message);
               toast.error("Failed to load UDFs.");
+              router.push("/login");
             }
           };
 
           const fetchItems = async () => {
             try {
               const res = await fetch(`${SERVER_ADDRESS}api/Common/GetItems`, {
-                headers: { Authorization: `Bearer ${token}` },
+                headers: { Authorization: `Bearer ${getToken()}` },
               });
               if (!res.ok) throw new Error("Failed to load items");
               const data = await res.json();
@@ -165,6 +172,7 @@ const ReturnRequest = () => {
             } catch (error) {
               console.error(error.message);
               toast.error("Failed to load items.");
+              router.push("/login");
             }
           };
 
@@ -173,7 +181,7 @@ const ReturnRequest = () => {
               const res = await fetch(
                 `${SERVER_ADDRESS}api/Common/GetAllWarehouse`,
                 {
-                  headers: { Authorization: `Bearer ${token}` },
+                  headers: { Authorization: `Bearer ${getToken()}` },
                 }
               );
               if (!res.ok) throw new Error("Failed to load warehouses");
@@ -182,6 +190,7 @@ const ReturnRequest = () => {
             } catch (error) {
               console.error(error.message);
               toast.error("Failed to load warehouses.");
+              router.push("/login");
             }
           };
 
@@ -190,7 +199,7 @@ const ReturnRequest = () => {
               const res = await fetch(
                 `${SERVER_ADDRESS}api/Common/GetTaxRate`,
                 {
-                  headers: { Authorization: `Bearer ${token}` },
+                  headers: { Authorization: `Bearer ${getToken()}` },
                 }
               );
               if (!res.ok) throw new Error("Failed to load tax rate");
@@ -199,6 +208,7 @@ const ReturnRequest = () => {
             } catch (error) {
               console.error(error.message);
               toast.error("Failed to load tax rate.");
+              router.push("/login");
             }
           };
 
@@ -207,7 +217,7 @@ const ReturnRequest = () => {
               const res = await fetch(
                 `${SERVER_ADDRESS}api/Common/GetAllSaleEmployee`,
                 {
-                  headers: { Authorization: `Bearer ${token}` },
+                  headers: { Authorization: `Bearer ${getToken()}` },
                 }
               );
               if (!res.ok) throw new Error("Failed to load sales employees");
@@ -216,6 +226,7 @@ const ReturnRequest = () => {
             } catch (error) {
               console.error(error.message);
               toast.error("Failed to load sales employees.");
+              router.push("/login");
             }
           };
 
@@ -224,7 +235,7 @@ const ReturnRequest = () => {
               const res = await fetch(
                 `${SERVER_ADDRESS}api/Common/GetFreights`,
                 {
-                  headers: { Authorization: `Bearer ${token}` },
+                  headers: { Authorization: `Bearer ${getToken()}` },
                 }
               );
               if (!res.ok) throw new Error("Failed to load freights");
@@ -233,6 +244,7 @@ const ReturnRequest = () => {
             } catch (error) {
               console.error(error.message);
               toast.error("Failed to load freights.");
+              router.push("/login");
             }
           };
 
@@ -241,7 +253,7 @@ const ReturnRequest = () => {
               const res = await fetch(
                 `${SERVER_ADDRESS}api/Marketing/GetDocuments/${orderType}/${statusParam}/${formattedToDate}/${formattedFromDate}`,
                 {
-                  headers: { Authorization: `Bearer ${token}` },
+                  headers: { Authorization: `Bearer ${getToken()}` },
                 }
               );
               if (!res.ok)
@@ -251,6 +263,7 @@ const ReturnRequest = () => {
             } catch (error) {
               console.error(error.message);
               toast.error("Failed to load items by date and form type.");
+              router.push("/login");
             }
           };
 
