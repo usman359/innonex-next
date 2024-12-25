@@ -106,6 +106,7 @@ const Footer = () => {
     setCopyToTo,
     cashOptions,
     documentEntry,
+    handleDocNumKeyDown,
   } = useTable();
 
   const isAccountSelected = selectedEntityType === "account";
@@ -124,6 +125,10 @@ const Footer = () => {
   const [footerBtnText, setFooterBtnText] = useState("");
   const [payOnAccount, setPayOnAccount] = useState(false);
   const [paid, setPaid] = useState(null);
+
+  const handleFindButtonClick = () => {
+    handleDocNumKeyDown({ key: "Enter" }); // Simulate an Enter key event
+  };
 
   const openPaymentMeansModal = () => {
     setOperation("ok");
@@ -1086,6 +1091,8 @@ const Footer = () => {
     } else if (text === "OK" || text === "Cancel") {
       router.push("/menu");
       resetItemData();
+    } else if (text === "Find") {
+      handleFindButtonClick();
     }
   };
 
