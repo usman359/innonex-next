@@ -521,7 +521,7 @@ function TableProvider({ children }) {
         pathname !== "/business-partner-master-data"
       ) {
         if (isAddMode) {
-          // console.log(itemsByDateAndFormType);
+          console.log(itemsByDateAndFormType);
           if (itemsByDateAndFormType.length > 0) {
             setRowsToDisplayState((prevRows) =>
               ensureMinimumRows(
@@ -533,6 +533,14 @@ function TableProvider({ children }) {
             setDocumentNumber(nextNumber);
             setDocumentEntry(Number(itemsByDateAndFormType[0]?.docEntry));
           } else {
+            setPostingDate(currentDate);
+            setDocumentDate(currentDate);
+            setDueDate(currentDate);
+
+            // if (ctrlFEnterPressed) {
+            //   setStatus("");
+            // }
+
             setRowsToDisplayState((prevRows) =>
               ensureMinimumRows(
                 prevRows.map((row) => ({ ...row, lineStatus: "bost_Open" }))
@@ -592,9 +600,9 @@ function TableProvider({ children }) {
             }
           }
 
-          setPostingDate(currentDate);
-          setDocumentDate(currentDate);
-          setDueDate(currentDate);
+          // setPostingDate(currentDate);
+          // setDocumentDate(currentDate);
+          // setDueDate(currentDate);
         } else if (itemsByDateAndFormType.length > 0) {
           const currentIndex = Math.max(
             0,
@@ -790,12 +798,12 @@ function TableProvider({ children }) {
   }, [
     itemsByDateAndFormType,
     payments,
-    isAddMode,
-    currentDocumentIndex,
+    // isAddMode,
+    // currentDocumentIndex,
     // pathname,
     // seires,
     // currentPage,
-    series,
+    // series,
     // selectedSeriesIndex,
     // token,
   ]);

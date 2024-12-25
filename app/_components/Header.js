@@ -623,6 +623,8 @@ const Header = () => {
         e.preventDefault();
         handleFindAction();
 
+        setctrlFEnterPressed(true); // Set the manual entry mode
+
         // Reset document number field
         setDocumentNumber(null);
 
@@ -634,7 +636,7 @@ const Header = () => {
         // Reset the Series and Status fields to their first option
         setSeries(""); // Set the Series to the first option
         setStatus(""); // Reset Status to the default first option ("Open")
-        setctrlFEnterPressed(false);
+        // setctrlFEnterPressed(false);
       }
     };
 
@@ -646,6 +648,7 @@ const Header = () => {
     setStatus,
     setDocumentNumber,
     setctrlFEnterPressed,
+    docNumRef,
   ]);
 
   const handleItemClick = (customer) => {
