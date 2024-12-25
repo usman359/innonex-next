@@ -1,4 +1,4 @@
-import { format, isValid, parseISO, set } from "date-fns";
+import { format, isValid, parseISO } from "date-fns";
 import { usePathname, useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
@@ -332,7 +332,7 @@ const Footer = () => {
     const isSalesOrderPage = pathname !== "/incoming-payments"; // Check if the current page is not Incoming Payments
 
     // Common validation: Ensure customer details are provided
-    if (!selectedCustomer?.cardCode || !selectedCustomer?.cardName) {
+    if (!selectedCustomer?.cardName) {
       toast.error("Card Code and Card Name are required.");
       return false;
     }

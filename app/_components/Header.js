@@ -1001,7 +1001,6 @@ const Header = () => {
                 <select
                   value={series}
                   onChange={handleSeriesChange}
-                  disabled={ctrlFEnterPressed}
                   className={`border border-stone-400 focus:ring-2 focus:ring-yellow-600 focus:border-yellow-600 focus:border-0 focus:outline-none rounded-none w-16 ${
                     isDocNumManuallyEntered
                       ? "bg-yellow-200"

@@ -109,7 +109,12 @@ function TableProvider({ children }) {
   const [ctrlFEnterPressed, setctrlFEnterPressed] = useState(false);
   const [navDateButtonText, setNavDateButtonText] = useState("Show");
   const [payments, setPayments] = useState([]);
+  const [businessPartners, setBusinessPartners] = useState([]);
   const [selectedEntityType, setSelectedEntityType] = useState("customer");
+  const [
+    selectedEntityTypeBusinessPartner,
+    setSelectedEntityTypeBusinessPartner,
+  ] = useState("active");
   const [check, setCheck] = useState(true);
   const [bankTransfer, setBankTransfer] = useState(false);
   const [cash, setCash] = useState(false);
@@ -511,7 +516,10 @@ function TableProvider({ children }) {
     const currentDate = format(new Date(), "yyyy-MM-dd");
 
     async function fetchData() {
-      if (pathname !== "/incoming-payments") {
+      if (
+        pathname !== "/incoming-payments" &&
+        pathname !== "/business-partner-master-data"
+      ) {
         if (isAddMode) {
           // console.log(itemsByDateAndFormType);
           if (itemsByDateAndFormType.length > 0) {
@@ -696,6 +704,86 @@ function TableProvider({ children }) {
           setRemarks(currentPayment?.remarks);
           setJournalRemarks(currentPayment?.journalRemarks);
         }
+      } else if (pathname === "/business-partner-master-data") {
+        if (isAddMode) {
+          if (businessPartners.length > 0) {
+            setRowsToDisplayState(
+              new Array(10).fill({ lineStatus: "bost_Open" })
+            );
+
+            const nextNumber = businessPartners[0]?.docNum + 1;
+            setDocumentNumber(nextNumber);
+            // console.log(updatedRows);
+          } else {
+            // Initialize empty rows if no paymentInvoices exist
+            setRowsToDisplayState(
+              new Array(10).fill({ lineStatus: "bost_Open" })
+            );
+
+            let table;
+            console.log(currentPage);
+            // Banking Tables
+            if (currentPage === "business partner master data") table = "OCRD";
+
+            // console.log(seires);
+            // const seriesCode = seires[0]?.series;
+            const seriesCode =
+              selectedSeriesIndex >= 0 && seires[selectedSeriesIndex]?.series;
+            // console.log(seriesCode);
+            if (seriesCode) {
+              const response = await fetch(
+                `${SERVER_ADDRESS}api/Common/GetNextDocNum/${table}/${seriesCode}`
+              );
+              const data = await response.json();
+              console.log(data);
+              if (data) {
+                setDocumentNumber(data[0]?.DocNum);
+              }
+            }
+            // setDocumentNumber(1);
+          }
+          const currentDate = format(new Date(), "yyyy-MM-dd");
+          setPostingDate(currentDate);
+          setDocumentDate(currentDate);
+          setDueDate(currentDate);
+        } else if (businessPartners.length > 0) {
+          // When not in Add mode, handle editing existing payments
+          const currentIndex = Math.max(
+            0,
+            Math.min(currentDocumentIndex, payments.length - 1)
+          );
+          const currentBusinessPartner = businessPartners[currentDocumentIndex];
+          console.log(currentBusinessPartner);
+          setSelectedItem(currentBusinessPartner);
+          setCurrentDocumentIndex(currentIndex);
+
+          // // Populate the rows from the existing payment's invoices
+          // const updatedRows = currentBusinessPartner?.paymentInvoices.map(
+          //   (row) => ({
+          //     ...row,
+          //     lineStatus: row.lineStatus || "bost_Open", // Ensure correct lineStatus is applied
+          //   })
+          // );
+
+          // console.log(updatedRows);
+          // Ensure at least 10 rows
+          // setRowsToDisplayState(ensureMinimumRows(updatedRows));
+          setPostingDate(formatDate(currentBusinessPartner?.docDate));
+          // console.log(formatDate(currentPayment?.dueDate));
+          // console.log(formatDate(currentPayment?.taxDate));
+          setDueDate(formatDate(currentBusinessPartner?.dueDate));
+          setDocumentDate(formatDate(currentBusinessPartner?.taxDate));
+          setDocumentNumber(currentBusinessPartner?.docNum);
+          setAddress(currentBusinessPartner?.address);
+          setRemarks(currentBusinessPartner?.remarks);
+          setJournalRemarks(currentBusinessPartner?.journalRemarks);
+
+          console.log(currentBusinessPartner);
+          setSelectedCustomer({
+            cardCode: currentBusinessPartner?.cardCode,
+            cardName: currentBusinessPartner?.cardName,
+          });
+        }
       }
     }
     fetchData();
@@ -711,46 +799,6 @@ function TableProvider({ children }) {
     // selectedSeriesIndex,
     // token,
   ]);
-
-  // useEffect(() => {
-  //   if (selectedItem) {
-  //     console.log(selectedItem);
-  //     setRemarks(selectedItem.comments || "");
-  //     setDiscountPercentage(selectedItem.discountPercent || 0);
-
-  //     // Trigger totals calculation after data is loaded
-  //     calculateTotals();
-
-  //     setFreightTotal(
-  //       selectedItem.documentAdditionalExpenses?.reduce(
-  //         (total, expense) => total + parseFloat(expense.lineTotal) || 0,
-  //         0
-  //       )
-  //     );
-
-  //     // Set the sales employee and owner values
-  //     const employee = salesEmployees.find(
-  //       (emp) => emp.code * 1 === selectedItem.salesPersonCode
-  //     );
-  //     setSalesEmployee(employee ? employee.name : "");
-  //     setOwner(selectedItem.owner || "");
-  //     setCustomerRefNumber(selectedItem.numAtCard);
-  //   }
-  // }, [
-  //   selectedItem,
-  //   salesEmployees,
-  //   calculateTotals,
-  //   calculateTotalFreight,
-  //   freights,
-  // ]);
-
-  // useEffect(() => {
-  //   // Ensure totals are recalculated when `ctrlFEnterPressed` is true
-  //   if (ctrlFEnterPressed) {
-  //     calculateTotals();
-  //     setctrlFEnterPressed(false); // Reset the flag after recalculating totals
-  //   }
-  // }, [ctrlFEnterPressed, rowsToDisplayState, calculateTotals]);
 
   const handleFindAction = useCallback(() => {
     setIsAddMode(false); // Exit Add mode
@@ -1020,6 +1068,10 @@ function TableProvider({ children }) {
         setRemarksTab,
         generalItemMasterData,
         setGeneralItemMasterData,
+        businessPartners,
+        setBusinessPartners,
+        selectedEntityTypeBusinessPartner,
+        setSelectedEntityTypeBusinessPartner,
       }}
     >
       {children}

@@ -2,7 +2,6 @@ import { format, parseISO } from "date-fns";
 import { usePathname, useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
-import { HiAdjustmentsHorizontal } from "react-icons/hi2";
 import { useTable } from "../_contexts/TableContext";
 import Input from "./Input";
 import Modal from "./Modal";
@@ -14,16 +13,12 @@ const General = () => {
   const router = useRouter();
   const customerRef = useRef(null);
 
-  const [showDeliveryCalendar, setShowDeliveryCalendar] = useState(false);
-  const [showPostingCalendar, setShowPostingCalendar] = useState(false);
-  const [showDocumentCalendar, setShowDocumentCalendar] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
 
   const {
     customers,
     selectedItem,
-    selectedCustomer,
     setSelectedCustomer,
     status,
     setStatus,
@@ -31,7 +26,6 @@ const General = () => {
     setOriginalCustomer,
     documentNumber,
     setDocumentNumber,
-    postingDate,
     setPostingDate,
     deliveryDate,
     setDeliveryDate,
@@ -74,21 +68,17 @@ const General = () => {
     token,
     setDueDate,
     setTotal,
-    address,
-    dueDate,
-    setSalesLoading,
-    contactPerson,
-    setContactPerson,
-    selectedEntityType,
-    setSelectedEntityType,
     setPayments,
     setCustomers,
     setFreightTotal,
     setSelectedItem,
+    selectedEntityTypeBusinessPartner,
+    setSalesLoading,
   } = useTable();
 
-  const isAccountSelected =
-    pathname === "/incoming-payments" && selectedEntityType === "account";
+  const isBusinessPartnerSelected =
+    pathname === "/business-partner-master-data" &&
+    selectedEntityTypeBusinessPartner === "active";
 
   const [selectedCustomerRow, setSelectedCustomerRow] = useState(null);
 
@@ -104,14 +94,6 @@ const General = () => {
   // Function to handle the click on the adjustment icon
   const handleAdjustmentsClick = () => {
     setIsModalOpen(true);
-  };
-
-  const handleSeriesChange = (e) => {
-    const selectedIndex = e.target.selectedIndex - 1; // Adjust for any placeholder option
-    // console.log(selectedIndex);
-    const selectedSeries = seires[selectedIndex];
-    setSeries(selectedSeries.seriesName); // Update selected series name
-    setSelectedSeriesIndex(selectedIndex); // Track selected index in TableContext
   };
 
   const fetchInvoicesByCustomerCode = useCallback(
@@ -183,37 +165,20 @@ const General = () => {
     handleCustomerSelection(row);
   };
 
-  const handleFieldChange = (setter) => (e) => {
-    setter(e.target.value);
-    setHasUnsavedChanges(true);
-
-    if (isAddMode) setOperation("add");
-    if (!isAddMode) setOperation("update");
-    if (ctrlFEnterPressed) setOperation("update");
-  };
-
-  const handleDateChange = (setter) => (e) => {
-    const dateValue = e.target.value;
-    // Update if date is valid or clear
-    setter(dateValue ? new Date(dateValue).toISOString().split("T")[0] : "");
-    setHasUnsavedChanges(true);
-
-    if (isAddMode) setOperation("add");
-    if (!isAddMode) setOperation("update");
-    if (ctrlFEnterPressed) setOperation("update");
-  };
-
-  const handleBlur = (setShowCalendar) => () => {
-    setShowCalendar(false);
-  };
-
-  const handleFocus = (setShowCalendar) => () => {
-    setShowCalendar(true);
-  };
-
   const handleCustomerSelection = useCallback(
     (customer) => {
-      setSelectedCustomer(customer);
+      if (!customer || !customer.cardCode || !customer.cardName) {
+        toast.error(
+          "Invalid customer selection. Please select a valid customer."
+        );
+        return;
+      }
+
+      setSelectedCustomer({
+        cardCode: customer.cardCode,
+        cardName: customer.cardName,
+      });
+
       setIsModalOpen(false);
       setIsCustomerIconVisible(true);
       setIsItemDescriptionIconVisible(true);
@@ -232,19 +197,6 @@ const General = () => {
       pathname,
     ]
   );
-
-  // Handle document number changes
-  const handleDocNumChange = (e) => {
-    const value = Number(e.target.value);
-    setDocumentNumber(value);
-  };
-
-  const handleStatusChange = (e) => {
-    const newStatus = e.target.value;
-    setStatus(newStatus);
-    setShowRecordIcons(false);
-    setNavDateButtonText("Search");
-  };
 
   const handleDocNumKeyDown = useCallback(
     async (e) => {
@@ -572,9 +524,9 @@ const General = () => {
 
   useEffect(() => {
     if (selectedItem) {
-      setPostingDate(format(parseISO(selectedItem.docDate), "yyyy-MM-dd"));
-      setDeliveryDate(format(new Date(), "yyyy-MM-dd"));
-      setDocumentDate(format(parseISO(selectedItem.taxDate), "yyyy-MM-dd"));
+      // setPostingDate(format(parseISO(selectedItem.docDate), "yyyy-MM-dd"));
+      // setDeliveryDate(format(new Date(), "yyyy-MM-dd"));
+      // setDocumentDate(format(parseISO(selectedItem.taxDate), "yyyy-MM-dd"));
 
       setSelectedCustomer({
         cardCode: selectedItem?.cardCode,
@@ -671,73 +623,97 @@ const General = () => {
           <div className="flex flex-col gap-0.5 sm:mt-2">
             <Input
               label="Tel 1"
-              value={selectedCustomer.cardCode}
+              value={selectedItem?.phone1}
+              onChange={(e) =>
+                setSelectedItem((prev) => ({
+                  ...prev,
+                  phone1: e.target.value,
+                }))
+              }
               readOnly={status !== "Open"}
               isEditable={isDocNumManuallyEntered}
               onIconClick={handleAdjustmentsClick}
               status={status}
               style={{
-                visibility: isAccountSelected ? "hidden" : "visible",
+                visibility: !isBusinessPartnerSelected ? "hidden" : "visible",
               }}
             />
 
             <Input
               label="Tel 2"
-              value={selectedCustomer.cardCode}
+              value={selectedItem?.phone2}
+              onChange={(e) =>
+                setSelectedItem((prev) => ({
+                  ...prev,
+                  phone2: e.target.value,
+                }))
+              }
               readOnly={status !== "Open"}
               isEditable={isDocNumManuallyEntered}
               onIconClick={handleAdjustmentsClick}
               status={status}
               style={{
-                visibility: isAccountSelected ? "hidden" : "visible",
+                visibility: !isBusinessPartnerSelected ? "hidden" : "visible",
               }}
             />
 
             <Input
               label="Mobile Phone"
-              value={selectedCustomer.cardCode}
+              value={selectedItem?.cellular}
+              onChange={(e) =>
+                setSelectedItem((prev) => ({
+                  ...prev,
+                  cellular: e.target.value,
+                }))
+              }
               readOnly={status !== "Open"}
               isEditable={isDocNumManuallyEntered}
               onIconClick={handleAdjustmentsClick}
               status={status}
               style={{
-                visibility: isAccountSelected ? "hidden" : "visible",
+                visibility: !isBusinessPartnerSelected ? "hidden" : "visible",
               }}
             />
 
             <Input
               label="Fax"
-              value={selectedCustomer.cardCode}
+              value=""
               readOnly={status !== "Open"}
               isEditable={isDocNumManuallyEntered}
               onIconClick={handleAdjustmentsClick}
               status={status}
               style={{
-                visibility: isAccountSelected ? "hidden" : "visible",
+                visibility: !isBusinessPartnerSelected ? "hidden" : "visible",
               }}
             />
 
             <Input
               label="E-Mail"
-              value={selectedCustomer.cardCode}
+              value={selectedItem?.emailAddress}
+              onChange={(e) =>
+                setSelectedItem((prev) => ({
+                  ...prev,
+                  emailAddress: e.target.value,
+                }))
+              }
               readOnly={status !== "Open"}
               isEditable={isDocNumManuallyEntered}
               onIconClick={handleAdjustmentsClick}
               status={status}
               style={{
-                visibility: isAccountSelected ? "hidden" : "visible",
+                visibility: !isBusinessPartnerSelected ? "hidden" : "visible",
               }}
             />
 
             <Input
               label="Web Site"
-              value={selectedCustomer.cardCode}
+              value=""
               readOnly={status !== "Open"}
               isEditable={isDocNumManuallyEntered}
               onIconClick={handleAdjustmentsClick}
               status={status}
               style={{
-                visibility: isAccountSelected ? "hidden" : "visible",
+                visibility: !isBusinessPartnerSelected ? "hidden" : "visible",
               }}
             />
 
@@ -754,37 +730,37 @@ const General = () => {
 
             <Input
               label="Password"
-              value={selectedCustomer.cardCode}
+              value=""
               readOnly={status !== "Open"}
               isEditable={isDocNumManuallyEntered}
               onIconClick={handleAdjustmentsClick}
               status={status}
               style={{
-                visibility: isAccountSelected ? "hidden" : "visible",
+                visibility: !isBusinessPartnerSelected ? "hidden" : "visible",
               }}
             />
 
             <Input
               label="Factoring Indicator"
-              value={selectedCustomer.cardCode}
+              value=""
               readOnly={status !== "Open"}
               isEditable={isDocNumManuallyEntered}
               onIconClick={handleAdjustmentsClick}
               status={status}
               style={{
-                visibility: isAccountSelected ? "hidden" : "visible",
+                visibility: !isBusinessPartnerSelected ? "hidden" : "visible",
               }}
             />
 
             <Input
               label="BP Project"
-              value={selectedCustomer.cardCode}
+              value=""
               readOnly={status !== "Open"}
               isEditable={isDocNumManuallyEntered}
               onIconClick={handleAdjustmentsClick}
               status={status}
               style={{
-                visibility: isAccountSelected ? "hidden" : "visible",
+                visibility: !isBusinessPartnerSelected ? "hidden" : "visible",
               }}
             />
 
@@ -822,73 +798,73 @@ const General = () => {
 
             <Input
               label="Contact Person"
-              value={selectedCustomer.cardCode}
+              value=""
               readOnly={status !== "Open"}
               isEditable={isDocNumManuallyEntered}
               onIconClick={handleAdjustmentsClick}
               status={status}
               style={{
-                visibility: isAccountSelected ? "hidden" : "visible",
+                visibility: !isBusinessPartnerSelected ? "hidden" : "visible",
               }}
             />
 
             <Input
               label="ID No. 2"
-              value={selectedCustomer.cardCode}
+              value=""
               readOnly={status !== "Open"}
               isEditable={isDocNumManuallyEntered}
               onIconClick={handleAdjustmentsClick}
               status={status}
               style={{
-                visibility: isAccountSelected ? "hidden" : "visible",
+                visibility: !isBusinessPartnerSelected ? "hidden" : "visible",
               }}
             />
 
             <Input
               label="Unified Federal Tax ID"
-              value={selectedCustomer.cardCode}
+              value=""
               readOnly={status !== "Open"}
               isEditable={isDocNumManuallyEntered}
               onIconClick={handleAdjustmentsClick}
               status={status}
               style={{
-                visibility: isAccountSelected ? "hidden" : "visible",
+                visibility: !isBusinessPartnerSelected ? "hidden" : "visible",
               }}
             />
 
             <Input
               label="Remarks"
-              value={selectedCustomer.cardCode}
+              value=""
               readOnly={status !== "Open"}
               isEditable={isDocNumManuallyEntered}
               onIconClick={handleAdjustmentsClick}
               status={status}
               style={{
-                visibility: isAccountSelected ? "hidden" : "visible",
+                visibility: !isBusinessPartnerSelected ? "hidden" : "visible",
               }}
             />
 
             <Input
               label="BP Channel Code"
-              value={selectedCustomer.cardCode}
+              value=""
               readOnly={status !== "Open"}
               isEditable={isDocNumManuallyEntered}
               onIconClick={handleAdjustmentsClick}
               status={status}
               style={{
-                visibility: isAccountSelected ? "hidden" : "visible",
+                visibility: !isBusinessPartnerSelected ? "hidden" : "visible",
               }}
             />
 
             <Input
               label="Territory"
-              value={selectedCustomer.cardCode}
+              value=""
               readOnly={status !== "Open"}
               isEditable={isDocNumManuallyEntered}
               onIconClick={handleAdjustmentsClick}
               status={status}
               style={{
-                visibility: isAccountSelected ? "hidden" : "visible",
+                visibility: !isBusinessPartnerSelected ? "hidden" : "visible",
               }}
             />
           </div>
@@ -903,13 +879,13 @@ const General = () => {
 
               <Input
                 label="Alias Name"
-                value={selectedCustomer.cardCode}
+                value=""
                 readOnly={status !== "Open"}
                 isEditable={isDocNumManuallyEntered}
                 onIconClick={handleAdjustmentsClick}
                 status={status}
                 style={{
-                  visibility: isAccountSelected ? "hidden" : "visible",
+                  visibility: !isBusinessPartnerSelected ? "hidden" : "visible",
                 }}
               />
 
@@ -919,7 +895,7 @@ const General = () => {
                     type="radio"
                     id="activeRadio"
                     name="entityType"
-                    checked={selectedEntityType === "active"}
+                    checked={selectedEntityTypeBusinessPartner === "active"}
                     onChange={() => handleEntityTypeChange("active")}
                     disabled={!isAddMode || ctrlFEnterPressed} // Disable unless not in add mode and ctrlFEnterPressed is true
                   />
@@ -931,7 +907,7 @@ const General = () => {
                     type="radio"
                     id="inactiveRadio"
                     name="entityType"
-                    checked={selectedEntityType === "inactive"}
+                    checked={selectedEntityTypeBusinessPartner === "inactive"}
                     onChange={() => handleEntityTypeChange("inactive")}
                     disabled={!isAddMode || ctrlFEnterPressed} // Disable unless not in add mode and ctrlFEnterPressed is true
                   />
@@ -943,7 +919,7 @@ const General = () => {
                     type="radio"
                     id="advancedRadio"
                     name="entityType"
-                    checked={selectedEntityType === "advanced"}
+                    checked={selectedEntityTypeBusinessPartner === "advanced"}
                     onChange={() => handleEntityTypeChange("advanced")}
                     disabled={!isAddMode || ctrlFEnterPressed} // Disable unless not in add mode and ctrlFEnterPressed is true
                   />
@@ -959,13 +935,13 @@ const General = () => {
 
               <Input
                 label="GLN"
-                value={selectedCustomer.cardCode}
+                value=""
                 readOnly={status !== "Open"}
                 isEditable={isDocNumManuallyEntered}
                 onIconClick={handleAdjustmentsClick}
                 status={status}
                 style={{
-                  visibility: isAccountSelected ? "hidden" : "visible",
+                  visibility: !isBusinessPartnerSelected ? "hidden" : "visible",
                 }}
               />
             </div>

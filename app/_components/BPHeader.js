@@ -14,9 +14,6 @@ const BPHeader = () => {
   const router = useRouter();
   const customerRef = useRef(null);
 
-  const [showDeliveryCalendar, setShowDeliveryCalendar] = useState(false);
-  const [showPostingCalendar, setShowPostingCalendar] = useState(false);
-  const [showDocumentCalendar, setShowDocumentCalendar] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -119,7 +116,7 @@ const BPHeader = () => {
       setSalesLoading(true);
       try {
         const response = await fetch(
-          `${SERVER_ADDRESS}api/Common/GetInvoices/${cardCode}`,
+          `${SERVER_ADDRESS}api/SAPGeneral/GetBusinessPartnerDetails/${cardCode}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -183,34 +180,6 @@ const BPHeader = () => {
     handleCustomerSelection(row);
   };
 
-  const handleFieldChange = (setter) => (e) => {
-    setter(e.target.value);
-    setHasUnsavedChanges(true);
-
-    if (isAddMode) setOperation("add");
-    if (!isAddMode) setOperation("update");
-    if (ctrlFEnterPressed) setOperation("update");
-  };
-
-  const handleDateChange = (setter) => (e) => {
-    const dateValue = e.target.value;
-    // Update if date is valid or clear
-    setter(dateValue ? new Date(dateValue).toISOString().split("T")[0] : "");
-    setHasUnsavedChanges(true);
-
-    if (isAddMode) setOperation("add");
-    if (!isAddMode) setOperation("update");
-    if (ctrlFEnterPressed) setOperation("update");
-  };
-
-  const handleBlur = (setShowCalendar) => () => {
-    setShowCalendar(false);
-  };
-
-  const handleFocus = (setShowCalendar) => () => {
-    setShowCalendar(true);
-  };
-
   const handleCustomerSelection = useCallback(
     (customer) => {
       setSelectedCustomer(customer);
@@ -237,13 +206,6 @@ const BPHeader = () => {
   const handleDocNumChange = (e) => {
     const value = Number(e.target.value);
     setDocumentNumber(value);
-  };
-
-  const handleStatusChange = (e) => {
-    const newStatus = e.target.value;
-    setStatus(newStatus);
-    setShowRecordIcons(false);
-    setNavDateButtonText("Search");
   };
 
   const handleDocNumKeyDown = useCallback(
@@ -572,9 +534,9 @@ const BPHeader = () => {
 
   useEffect(() => {
     if (selectedItem) {
-      setPostingDate(format(parseISO(selectedItem.docDate), "yyyy-MM-dd"));
-      setDeliveryDate(format(new Date(), "yyyy-MM-dd"));
-      setDocumentDate(format(parseISO(selectedItem.taxDate), "yyyy-MM-dd"));
+      // setPostingDate(format(parseISO(selectedItem.docDate), "yyyy-MM-dd"));
+      // setDeliveryDate(format(new Date(), "yyyy-MM-dd"));
+      // setDocumentDate(format(parseISO(selectedItem.taxDate), "yyyy-MM-dd"));
 
       setSelectedCustomer({
         cardCode: selectedItem?.cardCode,
@@ -699,7 +661,7 @@ const BPHeader = () => {
                 <input
                   ref={docNumRef}
                   type="text"
-                  value={documentNumber || ""}
+                  value={selectedCustomer.cardCode || ""}
                   readOnly={!isDocNumManuallyEntered}
                   onChange={handleDocNumChange}
                   onKeyDown={handleDocNumKeyDown}
@@ -740,7 +702,13 @@ const BPHeader = () => {
 
             <Input
               label="Name"
-              value={selectedCustomer.cardCode}
+              value={selectedCustomer?.cardName || ""}
+              onChange={(e) =>
+                setSelectedCustomer((prev) => ({
+                  ...prev,
+                  cardName: e.target.value,
+                }))
+              }
               readOnly={status !== "Open"}
               isEditable={isDocNumManuallyEntered}
               onIconClick={handleAdjustmentsClick}
@@ -752,17 +720,15 @@ const BPHeader = () => {
 
             <Input
               label="Foreign Name"
-              value={selectedCustomer.cardName}
+              value={selectedItem?.cardForeignName}
+              onChange={(e) =>
+                setSelectedItem((prev) => ({
+                  ...prev,
+                  cardForeignName: e.target.value,
+                }))
+              }
               readOnly={status !== "Open"}
               isEditable={isDocNumManuallyEntered}
-              icon={
-                isAddMode &&
-                isCustomerIconVisible &&
-                !isDocNumManuallyEntered && (
-                  <HiAdjustmentsHorizontal className="text-stone-500" />
-                )
-              }
-              onIconClick={() => setIsModalOpen(true)}
               status={status}
               style={{
                 visibility: isAccountSelected ? "hidden" : "visible",
@@ -793,7 +759,7 @@ const BPHeader = () => {
 
             <Input
               label="Federal Tax ID"
-              value={selectedCustomer.cardCode}
+              value=""
               readOnly={status !== "Open"}
               isEditable={isDocNumManuallyEntered}
               onIconClick={handleAdjustmentsClick}
@@ -822,7 +788,7 @@ const BPHeader = () => {
 
             <Input
               label="Orders"
-              value={selectedCustomer.cardCode}
+              value=""
               readOnly={status !== "Open"}
               isEditable={isDocNumManuallyEntered}
               onIconClick={handleAdjustmentsClick}

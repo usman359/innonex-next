@@ -84,6 +84,8 @@ export default function Nav2() {
     setTax,
     setDiscountValue,
     setFreightTotal,
+    businessPartners,
+    setBusinessPartners,
   } = useTable();
 
   const getToken = () => {
@@ -190,9 +192,15 @@ export default function Nav2() {
 
       // console.log(pathname);
       // console.log(isIncomingPayments);
-      const apiUrl = isIncomingPayments
-        ? `${SERVER_ADDRESS}api/Payments/GetPaymentList/${orderType}/${statusParam}/${formattedToDate}/${formattedFromDate}`
-        : `${SERVER_ADDRESS}api/Marketing/GetDocuments/${orderType}/${statusParam}/${formattedToDate}/${formattedFromDate}`;
+      let apiUrl = "";
+
+      if (pathname === "/business-partner-master-data") {
+        apiUrl = `${SERVER_ADDRESS}api/SAPGeneral/GetBusinessPartners/${formattedToDate}/${formattedFromDate}`;
+      } else if (isIncomingPayments) {
+        apiUrl = `${SERVER_ADDRESS}api/Payments/GetPaymentList/${orderType}/${statusParam}/${formattedToDate}/${formattedFromDate}`;
+      } else {
+        apiUrl = `${SERVER_ADDRESS}api/Marketing/GetDocuments/${orderType}/${statusParam}/${formattedToDate}/${formattedFromDate}`;
+      }
 
       const response = await fetch(apiUrl, {
         headers: {
@@ -206,10 +214,12 @@ export default function Nav2() {
           console.log(data);
           resetItemData();
 
-          if (isIncomingPayments) {
-            setPayments(data); // Set the fetched payments
+          if (pathname === "/business-partner-master-data") {
+            setBusinessPartners(data); // Store business partners
+          } else if (isIncomingPayments) {
+            setPayments(data); // Store payments
           } else {
-            setItemsByDateAndFormType(data); // Set the fetched items
+            setItemsByDateAndFormType(data); // Store other document data
           }
 
           setNavDateButtonText("Show");
@@ -245,15 +255,20 @@ export default function Nav2() {
   };
 
   // Filter the data based on the page
-  const filteredItems = isIncomingPayments
-    ? payments?.length > 0
-      ? payments.filter((payment) =>
-          payment.docNum.toString()?.includes(searchTerm)
+  const filteredItems =
+    pathname === "/business-partner-master-data"
+      ? businessPartners?.filter(
+          (bp) =>
+            bp.cardCode?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            bp.cardName?.toLowerCase().includes(searchTerm.toLowerCase())
         )
-      : []
-    : itemsByDateAndFormType?.length > 0
-    ? itemsByDateAndFormType.filter((item) => item.docNum?.includes(searchTerm))
-    : [];
+      : isIncomingPayments
+      ? payments?.filter((payment) =>
+          payment.docNum?.toString()?.includes(searchTerm)
+        )
+      : itemsByDateAndFormType?.filter((item) =>
+          item.docNum?.includes(searchTerm)
+        );
 
   const handleTempFromDateChange = (event) => {
     const newFromDate = new Date(event.target.value);
@@ -310,64 +325,72 @@ export default function Nav2() {
   };
 
   const handleRecordSelection = (selected) => {
-    setSelectedItem(selected);
+    if (pathname === "/business-partner-master-data") {
+      setSelectedCustomer({
+        cardCode: selected.cardCode,
+        cardName: selected.cardName,
+      });
+      setCustomerRefNumber(selected.federalTaxID || "");
 
-    if (isIncomingPayments) {
-      // For Incoming Payments, update the rows and index using the payments array
-      updateRowsToDisplay(
-        selected?.paymentInvoices ||
-          new Array(10).fill({ lineStatus: "bost_Open" })
-      );
-      setCurrentDocumentIndex(payments.indexOf(selected)); // Update index based on the payments array
+      setTax(selected.balance || 0);
+    } else if (isIncomingPayments) {
+      updateRowsToDisplay(selected?.paymentInvoices || []);
     } else {
-      // For other pages, update the rows and index using the itemsByDateAndFormType array
-      updateRowsToDisplay(
-        selected?.documentLines ||
-          new Array(10).fill({ lineStatus: "bost_Open" })
-      );
-      setCurrentDocumentIndex(itemsByDateAndFormType.indexOf(selected)); // Update index based on the items array
+      updateRowsToDisplay(selected?.documentLines || []);
     }
 
-    setIsAddMode(false); // Exit add mode
+    setIsAddMode(false);
     setHiAdjustmentsVisible(true);
     setIsCustomerIconVisible(false);
     setIsItemDescriptionIconVisible(true);
-
-    // Reset unsaved changes and manual entry status
     setHasUnsavedChanges(false);
     setIsDocNumManuallyEntered(false);
   };
 
+  const getDataSource = () => {
+    if (pathname === "/business-partner-master-data") {
+      return businessPartners || [];
+    }
+    return isIncomingPayments ? payments || [] : itemsByDateAndFormType || [];
+  };
+
+  const navigateToRecord = (index) => {
+    const data = getDataSource();
+
+    if (!data.length) {
+      toast.error("No records available.");
+      return;
+    }
+
+    const validIndex = Math.min(Math.max(index, 0), data.length - 1);
+    const selectedItem = data[validIndex];
+
+    setCurrentDocumentIndex(validIndex);
+    setSelectedItem(selectedItem);
+    handleRecordSelection(selectedItem);
+  };
+
   const handlePreviousRecord = () => {
-    const data = isIncomingPayments ? payments : itemsByDateAndFormType;
+    const data = getDataSource();
 
     if (isAddMode) {
-      // Find the previous item based on document number
       const previousDocNumber = documentNumber - 1;
       const previousItem = data.find(
         (item) => Number(item.docNum) === Number(previousDocNumber)
       );
 
       if (previousItem) {
-        const previousIndex = data.indexOf(previousItem);
-        setCurrentDocumentIndex(previousIndex);
-        setSelectedItem(previousItem);
-        handleRecordSelection(previousItem, previousIndex);
+        navigateToRecord(data.indexOf(previousItem));
       } else {
         toast.error("No previous record found.");
       }
-    } else if (currentDocumentIndex < data.length - 1) {
-      // Standard mode: navigate to the previous index
-      const previousIndex = currentDocumentIndex + 1;
-      const previousItem = data[previousIndex];
-      setCurrentDocumentIndex(previousIndex);
-      setSelectedItem(previousItem);
-      handleRecordSelection(previousItem, previousIndex);
+    } else {
+      navigateToRecord(currentDocumentIndex + 1);
     }
   };
 
   const handleNextRecord = () => {
-    const data = isIncomingPayments ? payments : itemsByDateAndFormType;
+    const data = getDataSource();
 
     if (isAddMode) {
       const nextDocNumber = documentNumber + 1;
@@ -376,26 +399,19 @@ export default function Nav2() {
       );
 
       if (nextItem) {
-        const nextIndex = data.indexOf(nextItem);
-        setCurrentDocumentIndex(nextIndex);
-        setSelectedItem(nextItem);
-        handleRecordSelection(nextItem, nextIndex);
+        navigateToRecord(data.indexOf(nextItem));
       } else {
         toast.error("No next record found.");
       }
-    } else if (currentDocumentIndex > 0) {
-      const nextIndex = currentDocumentIndex - 1;
-      const nextItem = data[nextIndex];
-      setCurrentDocumentIndex(nextIndex);
-      setSelectedItem(nextItem);
-      handleRecordSelection(nextItem, nextIndex);
+    } else {
+      navigateToRecord(currentDocumentIndex - 1);
     }
   };
 
   const handleFirstRecord = () => {
-    const data = isIncomingPayments ? payments : itemsByDateAndFormType;
+    const data = getDataSource();
 
-    if (!data || data.length === 0) {
+    if (!data.length) {
       toast.error("No records available.");
       return;
     }
@@ -409,36 +425,24 @@ export default function Nav2() {
       );
 
       if (firstItem) {
-        const firstIndex = data.indexOf(firstItem);
-        setCurrentDocumentIndex(firstIndex);
-        setSelectedItem(firstItem);
-        handleRecordSelection(firstItem, firstIndex);
+        navigateToRecord(data.indexOf(firstItem));
       } else {
         toast.error("No first record found.");
       }
     } else {
-      const firstIndex = data.length - 1;
-      const firstItem = data[firstIndex];
-
-      if (firstItem) {
-        setCurrentDocumentIndex(firstIndex);
-        setSelectedItem(firstItem);
-        handleRecordSelection(firstItem, firstIndex);
-      } else {
-        toast.error("No first record found.");
-      }
+      navigateToRecord(data.length - 1);
     }
   };
 
   const handleLastRecord = () => {
-    const data = isIncomingPayments ? payments : itemsByDateAndFormType;
-    if (data.length > 0) {
-      const lastIndex = 0;
-      const lastItem = data[lastIndex];
-      setCurrentDocumentIndex(lastIndex);
-      setSelectedItem(lastItem);
-      handleRecordSelection(lastItem, lastIndex);
+    const data = getDataSource();
+
+    if (!data.length) {
+      toast.error("No records available.");
+      return;
     }
+
+    navigateToRecord(0);
   };
 
   function getDaySuffix(day) {
@@ -753,42 +757,43 @@ export default function Nav2() {
                 </tr>
               </thead>
               <tbody>
-                {!isIncomingPayments
-                  ? filteredItems?.map((result, index) => (
+                {pathname === "/business-partner-master-data"
+                  ? filteredItems?.map((partner, index) => (
                       <tr
                         key={index}
                         className={`cursor-pointer hover:bg-stone-100 ${
-                          selectedRow === result ? "bg-yellow-200" : ""
+                          selectedRow === partner ? "bg-yellow-200" : ""
                         }`}
-                        onClick={() => handleRowClick(result)}
-                        onDoubleClick={() => handleRowDoubleClick(result)}
+                        onClick={() => handleRowClick(partner)}
+                        onDoubleClick={() => handleRowDoubleClick(partner)}
                       >
                         <td className="p-2 border">{index + 1}</td>
-                        <td className="p-2 border">{result.docNum}</td>
-                        <td className="p-2 border">{result.cardCode}</td>
-                        <td className="p-2 border">{result.cardName}</td>
-                        <td className="p-2 border">{result.docTotal}</td>
+                        <td className="p-2 border">{partner.cardCode}</td>
+                        <td className="p-2 border">{partner.cardName}</td>
                         <td className="p-2 border">
-                          {formatDateWithSuffix(result.docDueDate)}
+                          {partner.federalTaxID || "N/A"}
+                        </td>
+                        <td className="p-2 border">
+                          {partner.balance || "N/A"}
                         </td>
                       </tr>
                     ))
-                  : filteredItems?.map((payment, index) => (
+                  : filteredItems?.map((item, index) => (
                       <tr
                         key={index}
                         className={`cursor-pointer hover:bg-stone-100 ${
-                          selectedRow === payment ? "bg-yellow-200" : ""
+                          selectedRow === item ? "bg-yellow-200" : ""
                         }`}
-                        onClick={() => handleRowClick(payment)}
-                        onDoubleClick={() => handleRowDoubleClick(payment)}
+                        onClick={() => handleRowClick(item)}
+                        onDoubleClick={() => handleRowDoubleClick(item)}
                       >
                         <td className="p-2 border">{index + 1}</td>
-                        <td className="p-2 border">{payment.docNum}</td>
-                        <td className="p-2 border">{payment.cardCode}</td>
-                        <td className="p-2 border">{payment.cardName}</td>
-                        <td className="p-2 border">{payment.cashSum}</td>
+                        <td className="p-2 border">{item.docNum}</td>
+                        <td className="p-2 border">{item.cardCode}</td>
+                        <td className="p-2 border">{item.cardName}</td>
+                        <td className="p-2 border">{item.docTotal}</td>
                         <td className="p-2 border">
-                          {formatDateWithSuffix(payment.dueDate)}
+                          {formatDateWithSuffix(item.docDueDate)}
                         </td>
                       </tr>
                     ))}

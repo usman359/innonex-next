@@ -19,7 +19,6 @@ const BusinessPartnerMasterData = () => {
   const {
     setCurrentPage,
     status,
-    setItemsByDateAndFormType,
     setItems,
     setCustomers,
     setUdfs,
@@ -43,6 +42,7 @@ const BusinessPartnerMasterData = () => {
     setDocumentNumber,
     setPayments,
     token,
+    setBusinessPartners,
   } = useTable();
 
   const getToken = () => {
@@ -59,6 +59,7 @@ const BusinessPartnerMasterData = () => {
       .toLowerCase();
 
     setCurrentPage(page);
+    console.log("page", page);
 
     setOrderType("INP");
   }, [
@@ -93,57 +94,18 @@ const BusinessPartnerMasterData = () => {
         try {
           setPaymentsLoading(true);
 
-          const fetchCustomers = async () => {
+          const fetchBusinessPartners = async () => {
             try {
               const res = await fetch(
-                `${SERVER_ADDRESS}api/Common/GetCustomers`,
+                `${SERVER_ADDRESS}api/SAPGeneral/GetBusinessPartners/${formattedToDate}/${formattedFromDate}`,
                 {
                   headers: { Authorization: `Bearer ${getToken()}` },
                 }
               );
-              if (!res.ok) throw new Error("Failed to load customers");
-              const data = await res.json();
-              setCustomers(data);
-            } catch (error) {
-              console.error(error.message);
-              toast.error("Failed to load vendors.");
-              router.push("/login");
-            }
-          };
-
-          const fetchSeries = async () => {
-            try {
-              const res = await fetch(
-                `${SERVER_ADDRESS}api/Common/GetSeires/${orderType}`,
-                {
-                  headers: { Authorization: `Bearer ${getToken()}` },
-                }
-              );
-              if (!res.ok) throw new Error("Failed to load series");
+              if (!res.ok) throw new Error("Failed to load business partners");
               const data = await res.json();
               console.log(data);
-              setSeires(data);
-            } catch (error) {
-              console.error(error.message);
-              toast.error("Failed to load series.");
-              router.push("/login");
-            }
-          };
-
-          const fetchPayments = async () => {
-            try {
-              const res = await fetch(
-                `${SERVER_ADDRESS}api/Payments/GetPaymentList/${orderType}/${statusParam}/${formattedToDate}/${formattedFromDate}`,
-                {
-                  headers: { Authorization: `Bearer ${getToken()}` },
-                }
-              );
-              if (!res.ok)
-                throw new Error(
-                  "Failed to load payments by date and form type"
-                );
-              const data = await res.json();
-              setPayments(data);
+              setBusinessPartners(data);
             } catch (error) {
               console.error(error.message);
               toast.error("Failed to load payments by date and form type.");
@@ -152,9 +114,8 @@ const BusinessPartnerMasterData = () => {
           };
 
           // Run each fetch function independently
-          await fetchCustomers();
-          await fetchSeries();
-          await fetchPayments();
+
+          await fetchBusinessPartners();
         } catch (error) {
           toast.error("An unexpected error occurred. Please try again.");
         } finally {
@@ -171,7 +132,7 @@ const BusinessPartnerMasterData = () => {
     selectedFromDate,
     selectedToDate,
     orderType,
-    setItemsByDateAndFormType,
+    setBusinessPartners,
     setCustomers,
     setItems,
     setWarehouses,
