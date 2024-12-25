@@ -838,6 +838,9 @@ function TableProvider({ children }) {
       docNumRef.current.focus(); // Set focus on the No. field
       docNumRef.current.select(); // Highlight the text (if any)
     }
+
+    setSeries(""); // Set the Series to the first option
+    setStatus(""); // Reset Status to the default first option ("Open")
   }, [
     resetItemData,
     setIsDocNumManuallyEntered,
