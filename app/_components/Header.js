@@ -747,7 +747,7 @@ const Header = () => {
                 <select
                   value={series}
                   onChange={handleSeriesChange}
-                  className={`border border-stone-400 focus:ring-2 focus:ring-yellow-600 focus:border-yellow-600 focus:border-0 focus:outline-none rounded-none w-16 ${
+                  className={`border border-stone-400 focus:ring-2 focus:ring-yellow-600 focus:border-yellow-600 focus:border-0 focus:outline-none rounded-none ${
                     isDocNumManuallyEntered
                       ? "bg-yellow-200"
                       : status === "Open"
