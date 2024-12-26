@@ -174,10 +174,10 @@ export default function Nav2() {
   };
 
   const fetchData = async (newFromDate, newToDate, statusParam) => {
-    if (!datesChanged && reloadLoadingCount === 0) {
-      console.log("Fetch skipped: No date change or reload.");
-      return;
-    }
+    // if (!datesChanged && reloadLoadingCount === 0) {
+    //   console.log("Fetch skipped: No date change or reload.");
+    //   return;
+    // }
     try {
       setFromAndToLoading(true);
 
@@ -285,6 +285,16 @@ export default function Nav2() {
   };
 
   const handleSearchClick = async () => {
+    console.log("Entered");
+    // Reset flags that may cause inconsistent behavior
+    setIsDocNumManuallyEntered(false);
+    setctrlFEnterPressed(false);
+
+    if (!selectedFromDate || !selectedToDate) {
+      toast.error("Please select valid From and To dates.");
+      return;
+    }
+
     if (navDateButtonText === "Search") {
       if (status === "") {
         setStatus("Open");

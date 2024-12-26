@@ -358,40 +358,6 @@ const Header = () => {
       customer.cardName?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (e.ctrlKey && e.key.toLowerCase() === "f") {
-        e.preventDefault();
-        handleFindAction();
-
-        setctrlFEnterPressed(true); // Set the manual entry mode
-
-        // Reset document number field
-        setDocumentNumber(null);
-
-        if (docNumRef.current) {
-          docNumRef.current.focus(); // Set focus on the No. field
-          docNumRef.current.select(); // Highlight the text (if any)
-        }
-
-        // Reset the Series and Status fields to their first option
-        setSeries(""); // Set the Series to the first option
-        setStatus(""); // Reset Status to the default first option ("Open")
-        // setctrlFEnterPressed(false);
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keyup", handleKeyDown);
-  }, [
-    handleFindAction,
-    setSeries,
-    setStatus,
-    setDocumentNumber,
-    setctrlFEnterPressed,
-    docNumRef,
-  ]);
-
   const handleItemClick = (customer) => {
     setSelectedCustomer(customer); // Update selected customer
     setCustomerCodeSearchTerm(customer.cardCode); // Update the customer code search term
@@ -406,6 +372,7 @@ const Header = () => {
 
   useEffect(() => {
     if (selectedItem) {
+      setDocumentNumber(selectedItem.docNum);
       setPostingDate(format(parseISO(selectedItem.docDate), "yyyy-MM-dd"));
       setDeliveryDate(format(new Date(), "yyyy-MM-dd"));
       setDocumentDate(format(parseISO(selectedItem.taxDate), "yyyy-MM-dd"));
@@ -428,6 +395,7 @@ const Header = () => {
     setSelectedCustomer,
     setOriginalCustomer,
     setDiscountValue,
+    setDocumentNumber,
   ]);
 
   // New function to fetch vendors

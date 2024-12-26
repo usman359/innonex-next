@@ -860,6 +860,7 @@ function TableProvider({ children }) {
 
       if (e.key === "Enter") {
         setIsAddMode(false);
+        setctrlFEnterPressed(false);
 
         if (!documentNumber || String(documentNumber).trim() === "") {
           toast.error(

@@ -912,8 +912,8 @@ const Footer = () => {
 
     let documentData = {
       RequriedDate: formatDateForApi(deliveryDate),
-      DocEntry: Number(documentEntry),
-      DocNum: String(documentNumber),
+      DocEntry: documentEntry,
+      DocNum: Number(documentNumber),
       NumAtCard: customerRefNumber || null,
       Series: selectedItem?.series || series || null,
       CardCode: selectedItem?.cardCode || selectedCustomer?.cardCode || null,
@@ -1103,7 +1103,7 @@ const Footer = () => {
     // console.log(`/${currentPage.split(" ").join("-")}`);
     // let currentPage = `/${currentPage.split(" ").join("-")}`;
     // console.log(currentPage);
-    console.log(selectedItem);
+    // console.log(selectedItem);
     setCopyToFrom(currentPage);
     setCopyToTo(`/${e.target.textContent.toLowerCase().split(" ").join("-")}`);
     if (
