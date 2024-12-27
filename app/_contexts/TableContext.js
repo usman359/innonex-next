@@ -577,7 +577,7 @@ function TableProvider({ children }) {
 
             // Inventory
             if (currentPage === "iterm master data") table = "OITM";
-            console.log(seires);
+            // console.log(seires);
             // const seriesCode = seires[0]?.series;
             const seriesCode =
               selectedSeriesIndex >= 0 && seires[selectedSeriesIndex]?.series;
@@ -887,7 +887,7 @@ function TableProvider({ children }) {
               `${SERVER_ADDRESS}api/Marketing/GetDocumentDetails/${orderType}/${documentNumber}`,
               {
                 headers: {
-                  Authorization: `Bearer ${token}`,
+                  Authorization: `Bearer ${getToken()}`,
                 },
               }
             );
@@ -991,7 +991,7 @@ function TableProvider({ children }) {
               `${SERVER_ADDRESS}api/Payments/GetPaymentDetails/${orderType}/${documentNumber}`,
               {
                 headers: {
-                  Authorization: `Bearer ${token}`,
+                  Authorization: `Bearer ${getToken()}`,
                 },
               }
             );

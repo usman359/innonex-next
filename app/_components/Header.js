@@ -741,13 +741,13 @@ const Header = () => {
 
         {pathname !== "/payment-means" && (
           <div className="flex flex-col gap-0.5 sm:mt-2">
-            <div className="flex items-center justify-between w-full">
+            <div className="flex gap-0.5 w-full">
               <div className="space-x-1.5">
                 <label className="inline-block w-[3.8rem]">No.</label>
                 <select
                   value={series}
                   onChange={handleSeriesChange}
-                  className={`border border-stone-400 focus:ring-2 focus:ring-yellow-600 focus:border-yellow-600 focus:border-0 focus:outline-none rounded-none ${
+                  className={`border border-stone-400 focus:ring-2 focus:ring-yellow-600 focus:border-yellow-600 focus:border-0 focus:outline-none rounded-none w-[4.2rem] ${
                     isDocNumManuallyEntered
                       ? "bg-yellow-200"
                       : status === "Open"
