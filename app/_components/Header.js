@@ -101,7 +101,12 @@ const Header = () => {
     setCustomerNameSearchTerm,
     docNumRef,
     handleDocNumKeyDown,
+    setSelectedSeriesIndex,
   } = useTable();
+
+  const getToken = () => {
+    return localStorage.getItem("token") || token;
+  };
 
   const isAccountSelected =
     pathname === "/incoming-payments" && selectedEntityType === "account";
@@ -182,10 +187,10 @@ const Header = () => {
   };
 
   const handleSeriesChange = (e) => {
-    const selectedIndex = e.target.selectedIndex - 1; // Adjust for any placeholder option
+    const selectedIndex = e.target.selectedIndex; // Adjust for any placeholder option
     // console.log(selectedIndex);
     const selectedSeries = seires[selectedIndex];
-    setSeries(selectedSeries.seriesName); // Update selected series name
+    setSeries(selectedSeries?.seriesName); // Update selected series name
     setSelectedSeriesIndex(selectedIndex); // Track selected index in TableContext
   };
 
@@ -197,7 +202,7 @@ const Header = () => {
           `${SERVER_ADDRESS}api/Common/GetInvoices/${cardCode}`,
           {
             headers: {
-              Authorization: `Bearer ${token}`,
+              Authorization: `Bearer ${getToken()}`,
             },
           }
         );
@@ -216,7 +221,7 @@ const Header = () => {
         setSalesLoading(false);
       }
     },
-    [setSalesLoading, SERVER_ADDRESS, token, updateRowsToDisplay]
+    [setSalesLoading, SERVER_ADDRESS, getToken, updateRowsToDisplay]
   );
 
   // Modal close handler
@@ -438,7 +443,7 @@ const Header = () => {
     try {
       const response = await fetch(`${SERVER_ADDRESS}api/Common/GetVendors`, {
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${getToken()}`,
         },
       });
 
@@ -462,7 +467,7 @@ const Header = () => {
     try {
       const response = await fetch(`${SERVER_ADDRESS}api/Common/GetCustomers`, {
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${getToken()}`,
         },
       });
 
@@ -786,24 +791,22 @@ const Header = () => {
               />
             </div>
 
-            {pathname !== "/incoming-payments" && (
-              <Select
-                label="Status"
-                options={[
-                  { value: "Open", label: "Open" },
-                  { value: "Closed", label: "Closed" },
-                  { value: "Cancelled", label: "Cancelled" },
-                  { value: "Delivery", label: "Delivery" },
-                ]}
-                value={status}
-                onChange={handleStatusChange}
-                disabled={ctrlFEnterPressed}
-                isEditable={ctrlFEnterPressed}
-                status={status}
-                isDocNumManuallyEntered={isDocNumManuallyEntered} // Add this line to control background color
-                className="status-select"
-              />
-            )}
+            <Select
+              label="Status"
+              options={[
+                { value: "Open", label: "Open" },
+                { value: "Closed", label: "Closed" },
+                { value: "Cancelled", label: "Cancelled" },
+                { value: "Delivery", label: "Delivery" },
+              ]}
+              value={status}
+              onChange={handleStatusChange}
+              disabled={ctrlFEnterPressed}
+              // isEditable={ctrlFEnterPressed}
+              status={status}
+              isDocNumManuallyEntered={isDocNumManuallyEntered} // Add this line to control background color
+              className="status-select"
+            />
 
             {/* Posting Date */}
             <div className="flex gap-2 items-center">

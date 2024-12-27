@@ -335,26 +335,54 @@ export default function Nav2() {
   };
 
   const handleRecordSelection = (selected) => {
+    if (!selected) {
+      toast.error("No record selected.");
+      return;
+    }
+
     if (pathname === "/business-partner-master-data") {
       setSelectedCustomer({
-        cardCode: selected.cardCode,
-        cardName: selected.cardName,
+        cardCode: selected.cardCode || "",
+        cardName: selected.cardName || "",
       });
       setCustomerRefNumber(selected.federalTaxID || "");
-
       setTax(selected.balance || 0);
     } else if (isIncomingPayments) {
       updateRowsToDisplay(selected?.paymentInvoices || []);
     } else {
       updateRowsToDisplay(selected?.documentLines || []);
+      setSelectedCustomer({
+        cardCode: selected.cardCode || "",
+        cardName: selected.cardName || "",
+      });
+      setDocumentNumber(selected.docNum || "");
+      setPostingDate(
+        selected.docDate ? format(parseISO(selected.docDate), "yyyy-MM-dd") : ""
+      );
+      setDeliveryDate(
+        selected.docDueDate
+          ? format(parseISO(selected.docDueDate), "yyyy-MM-dd")
+          : ""
+      );
+      setDocumentDate(
+        selected.taxDate ? format(parseISO(selected.taxDate), "yyyy-MM-dd") : ""
+      );
+      setRemarks(selected.comments || "");
+      setTax(selected.taxAmount || 0);
+      setFreightTotal(selected.freightTotal || 0);
     }
 
-    setIsAddMode(false);
-    setHiAdjustmentsVisible(true);
-    setIsCustomerIconVisible(false);
-    setIsItemDescriptionIconVisible(true);
+    // Ensure the modal closes
+    setIsModalOpen(false);
+
+    // Reset modal state
+    setSelectedRow(null);
     setHasUnsavedChanges(false);
     setIsDocNumManuallyEntered(false);
+    setIsAddMode(false);
+    setIsCustomerIconVisible(false);
+    setIsItemDescriptionIconVisible(true);
+    setHiAdjustmentsVisible(true);
   };
 
   const getDataSource = () => {
