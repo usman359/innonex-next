@@ -46,7 +46,7 @@ export default function ModulesTable() {
     // "A/P Reserve Invoice": "ap-reserve-invoice",
     // "Recurring Transactions": "recurring-transactions",
     // "Recurring Transactions Templates": "recurring-transactions-templates",
-    // "Landed Costs": "landed-costs",
+    "Landed Costs": "landed-costs",
     // "Procurement Confirmation Wizard": "procurement-confirmation-wizard",
     // "Purchase Quotation Generation Wizard":
     // "purchase-quotation-generation-wizard",

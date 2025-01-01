@@ -43,7 +43,7 @@ export const modules = [
       // "A/P Reserve Invoice",
       // "Recurring Transactions",
       // "Recurring Transaction Templates",
-      // "Landed Costs",
+      "Landed Costs",
       // "Procurement Confirmation Wizard",
       // "Purchase Quotation Generation Wizard",
       // "Document Printing",

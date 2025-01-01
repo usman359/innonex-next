@@ -183,6 +183,14 @@ export default function Nav1() {
                 router.push("/ap-credit-memo");
               },
             },
+            {
+              label: "Landed Costs",
+              onClick: () => {
+                // window.location.href = "/ap-credit-memo";
+                resetItemData();
+                router.push("/landed-costs");
+              },
+            },
           ],
         },
         {
