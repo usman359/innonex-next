@@ -12,6 +12,8 @@ import IPContentTable from "./IPContentTable";
 import OPContentTable from "./OPContentTable";
 import General from "./General";
 import GeneralItemMasterData from "./GeneralItemMasterData";
+import ItemsTable from "./ItemsTable";
+import CostsTable from "./CostsTable";
 
 export default function Main() {
   const {
@@ -195,6 +197,14 @@ export default function Main() {
         )}
 
         {isBPMasterData && <>{activeTab === "general" && <General />}</>}
+
+        {isLandedCosts && (
+          <>
+            {activeTab === "items" && <ItemsTable />}
+            {activeTab === "costs" && <CostsTable />}
+            {activeTab === "attachments" && <AttachmentTable />}
+          </>
+        )}
 
         {!isIncomingPayments &&
           !isOutgoingPayments &&

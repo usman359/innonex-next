@@ -25,6 +25,30 @@ const salesOrderItemsLabels = [
   "Tax Code",
 ];
 
+const landedCostsItemsLabels = [
+  "#",
+  "Item No.",
+  "Qty",
+  "Base Doc. Price",
+  "Base Doc. Value",
+  "Proj. Cust",
+  "Customs Value",
+  "Expenditure",
+  "Alloc. Costs Val.",
+  "Whse Price",
+  "Total",
+  "Total Costs",
+  "Warehouse",
+  "Release No.",
+  "Var Costs",
+  "Const Costs",
+  "Expected Customs",
+  "FOB and Included Costs",
+  "Project",
+  "Dimension 1",
+  "UoM Code",
+];
+
 const incomingPaymentLabels = [
   "#",
   "Selected",
@@ -1355,6 +1379,7 @@ function TableProvider({ children }) {
         setCostsTab,
         attachmentsTab,
         setAttachmentsTab,
+        landedCostsItemsLabels,
       }}
     >
       {children}
