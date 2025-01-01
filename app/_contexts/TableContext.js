@@ -125,6 +125,9 @@ function TableProvider({ children }) {
   const [paymentRun, setPaymentRun] = useState(false);
   const [accounting, setAccounting] = useState(false);
   const [remarksTab, setRemarksTab] = useState(false);
+  const [itemsTab, setItemsTab] = useState(false);
+  const [costsTab, setCostsTab] = useState(false);
+  const [attachmentsTab, setAttachmentsTab] = useState(false);
   const [copyToTriggered, setCopyToTriggered] = useState(false);
   const [copyToFrom, setCopyToFrom] = useState(null);
   const [copyToTo, setCopyToTo] = useState(null);
@@ -1346,6 +1349,12 @@ function TableProvider({ children }) {
         selectedEntityTypeBusinessPartner,
         setSelectedEntityTypeBusinessPartner,
         handleDocNumKeyDown,
+        itemsTab,
+        setItemsTab,
+        costsTab,
+        setCostsTab,
+        attachmentsTab,
+        setAttachmentsTab,
       }}
     >
       {children}

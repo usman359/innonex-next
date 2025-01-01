@@ -4,7 +4,7 @@ import { format } from "date-fns";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef } from "react";
 import toast from "react-hot-toast";
-import Footer from "../_components/Footer";
+import LCFooter from "../_components/LCFooter";
 import LCHeader from "../_components/LCHeader";
 import Main from "../_components/Main";
 import Nav1 from "../_components/Nav1";
@@ -390,7 +390,7 @@ const LandedCosts = () => {
       <div className="bg-white min-h-screen text-xs flex flex-col justify-between">
         <LCHeader />
         <Main />
-        <Footer />
+        <LCFooter />
       </div>
     </div>
   );

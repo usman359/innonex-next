@@ -15,253 +15,186 @@ import GeneralItemMasterData from "./GeneralItemMasterData";
 
 export default function Main() {
   const {
-    check,
     setCheck,
-    bankTransfer,
     setBankTransfer,
-    cash,
     setCash,
-    general,
     setGeneral,
-    generalItemMasterData,
     setGeneralItemMasterData,
-    paymentTerms,
     setPaymentTerms,
-    paymentRun,
     setPaymentRun,
-    remarksTab,
     setRemarksTab,
+    setItemsTab,
+    setCostsTab,
+    setAttachmentsTab,
   } = useTable();
+
   const pathname = usePathname();
 
-  // States
-  const [content, setContent] = useState(true);
-  const [logistic, setLogistic] = useState(false);
-  const [accounting, setAccounting] = useState(false);
-  const [attachment, setAttachment] = useState(false);
+  // Tabs State
+  const [activeTab, setActiveTab] = useState("content");
 
   const isIncomingPayments = pathname === "/incoming-payments";
   const isOutgoingPayments = pathname === "/outgoing-payments";
   const isPaymentMeans = pathname === "/payment-means";
   const isBPMasterData = pathname === "/business-partner-master-data";
   const isItemMasterData = pathname === "/item-master-data";
+  const isLandedCosts = pathname === "/landed-costs";
 
-  // Handlers
-  const handleClick = (val) => {
-    setContent(val === "content");
-    setLogistic(val === "logistic");
-    setAccounting(val === "accounting");
-    setAttachment(val === "attachment");
-    setCheck(val === "check");
-    setBankTransfer(val === "bankTransfer");
-    setCash(val === "cash");
-    setGeneral(val === "general");
-    setGeneralItemMasterData(val === "generalItemMasterData");
+  // Handler for Tab Click
+  const handleTabClick = (tab) => {
+    setActiveTab(tab);
+    setCheck(tab === "check");
+    setBankTransfer(tab === "bankTransfer");
+    setCash(tab === "cash");
+    setGeneral(tab === "general");
+    setGeneralItemMasterData(tab === "generalItemMasterData");
+    setPaymentTerms(tab === "paymentTerms");
+    setPaymentRun(tab === "paymentRun");
+    setRemarksTab(tab === "remarksTab");
+    setItemsTab(tab === "items");
+    setCostsTab(tab === "costs");
+    setAttachmentsTab(tab === "attachments");
   };
 
   return (
     <main
       className={`px-4 ${
-        pathname === "/business-partner-master-data" ||
-        pathname === "/item-master-data"
-          ? "mt-12"
-          : "mt-0"
+        isBPMasterData || isItemMasterData ? "mt-12" : "mt-0"
       }`}
     >
-      {/* Tab Container */}
-      <header className="grid grid-cols-4 cursor-pointer mb-4">
+      {/* Tab Navigation */}
+      <header className="grid grid-cols-4 gap-2 cursor-pointer mb-4 border-b border-stone-300">
         {isItemMasterData ? (
           <>
-            <span
-              className={`border-black text-center ${
-                generalItemMasterData
-                  ? "bg-stone-100 border-t"
-                  : "bg-stone-300 border"
-              }`}
-              onClick={() => handleClick("generalItemMasterData")}
-            >
-              General
-            </span>
-            <span
-              className={`border-black text-center ${
-                paymentTerms ? "bg-stone-100 border-t" : "bg-stone-300 border"
-              }`}
-              onClick={() => handleClick("paymentTerms")}
-            >
-              Payment Terms
-            </span>
-            <span
-              className={`border-black text-center ${
-                paymentRun ? "bg-stone-100 border-t" : "bg-stone-300 border"
-              }`}
-              onClick={() => handleClick("paymentRun")}
-            >
-              Payment Run
-            </span>
-            <span
-              className={`border-black text-center ${
-                accounting ? "bg-stone-100 border-t" : "bg-stone-300 border"
-              }`}
-              onClick={() => handleClick("accounting")}
-            >
-              Accounting
-            </span>
-            <span
-              className={`border-black text-center ${
-                remarksTab ? "bg-stone-100 border-t" : "bg-stone-300 border"
-              }`}
-              onClick={() => handleClick("remarksTab")}
-            >
-              Remarks
-            </span>
+            {[
+              "generalItemMasterData",
+              "paymentTerms",
+              "paymentRun",
+              "accounting",
+              "remarksTab",
+            ].map((tab) => (
+              <span
+                key={tab}
+                className={`text-center py-2 ${
+                  activeTab === tab
+                    ? "bg-stone-100 border-t-2 border-black"
+                    : "bg-stone-300"
+                }`}
+                onClick={() => handleTabClick(tab)}
+              >
+                {tab.replace(/([A-Z])/g, " $1").trim()}
+              </span>
+            ))}
           </>
         ) : isPaymentMeans ? (
           <>
-            <span
-              className={`border-black text-center ${
-                check ? "bg-stone-100 border-t" : "bg-stone-300 border"
-              }`}
-              onClick={() => handleClick("check")}
-            >
-              Check
-            </span>
-            <span
-              className={`border-black text-center ${
-                bankTransfer ? "bg-stone-100 border-t" : "bg-stone-300 border"
-              }`}
-              onClick={() => handleClick("bankTransfer")}
-            >
-              Bank Transfer
-            </span>
-            <span
-              className={`border-black text-center ${
-                cash ? "bg-stone-100 border-t" : "bg-stone-300 border"
-              }`}
-              onClick={() => handleClick("cash")}
-            >
-              Cash
-            </span>
+            {["check", "bankTransfer", "cash"].map((tab) => (
+              <span
+                key={tab}
+                className={`text-center py-2 ${
+                  activeTab === tab
+                    ? "bg-stone-100 border-t-2 border-black"
+                    : "bg-stone-300"
+                }`}
+                onClick={() => handleTabClick(tab)}
+              >
+                {tab.charAt(0).toUpperCase() + tab.slice(1)}
+              </span>
+            ))}
           </>
         ) : isBPMasterData ? (
           <>
-            <span
-              className={`border-black text-center ${
-                general ? "bg-stone-100 border-t" : "bg-stone-300 border"
-              }`}
-              onClick={() => handleClick("general")}
-            >
-              General
-            </span>
-            <span
-              className={`border-black text-center ${
-                paymentTerms ? "bg-stone-100 border-t" : "bg-stone-300 border"
-              }`}
-              onClick={() => handleClick("paymentTerms")}
-            >
-              Payment Terms
-            </span>
-            <span
-              className={`border-black text-center ${
-                paymentRun ? "bg-stone-100 border-t" : "bg-stone-300 border"
-              }`}
-              onClick={() => handleClick("paymentRun")}
-            >
-              Payment Run
-            </span>
-            <span
-              className={`border-black text-center ${
-                accounting ? "bg-stone-100 border-t" : "bg-stone-300 border"
-              }`}
-              onClick={() => handleClick("accounting")}
-            >
-              Accounting
-            </span>
-            <span
-              className={`border-black text-center ${
-                remarksTab ? "bg-stone-100 border-t" : "bg-stone-300 border"
-              }`}
-              onClick={() => handleClick("remarksTab")}
-            >
-              Remarks
-            </span>
+            {[
+              "general",
+              "paymentTerms",
+              "paymentRun",
+              "accounting",
+              "remarksTab",
+            ].map((tab) => (
+              <span
+                key={tab}
+                className={`text-center py-2 ${
+                  activeTab === tab
+                    ? "bg-stone-100 border-t-2 border-black"
+                    : "bg-stone-300"
+                }`}
+                onClick={() => handleTabClick(tab)}
+              >
+                {tab.replace(/([A-Z])/g, " $1").trim()}
+              </span>
+            ))}
           </>
-        ) : (
+        ) : isLandedCosts ? (
           <>
             <span
-              className={`border-black text-center ${
-                content ? "bg-stone-100 border-t" : "bg-stone-300 border"
+              className={`text-center py-2 ${
+                activeTab === "items"
+                  ? "bg-stone-100 border-t-2 border-black"
+                  : "bg-stone-300"
               }`}
-              onClick={() => handleClick("content")}
+              onClick={() => handleTabClick("items")}
             >
-              Contents
+              Items
             </span>
             {!isIncomingPayments && (
               <span
-                className={`border-black text-center ${
-                  logistic ? "bg-stone-100 border-t" : "bg-stone-300 border"
+                className={`text-center py-2 ${
+                  activeTab === "costs"
+                    ? "bg-stone-100 border-t-2 border-black"
+                    : "bg-stone-300"
                 }`}
-                onClick={() => handleClick("logistic")}
+                onClick={() => handleTabClick("costs")}
               >
-                Logistics
+                Costs
               </span>
             )}
             {!isIncomingPayments && (
               <span
-                className={`border-black text-center ${
-                  accounting ? "bg-stone-100 border-t" : "bg-stone-300 border"
+                className={`text-center py-2 ${
+                  activeTab === "attachments"
+                    ? "bg-stone-100 border-t-2 border-black"
+                    : "bg-stone-300"
                 }`}
-                onClick={() => handleClick("accounting")}
+                onClick={() => handleTabClick("attachments")}
               >
-                Accounting
+                Attachments
               </span>
             )}
-            <span
-              className={`border-black text-center ${
-                attachment ? "bg-stone-100 border-t" : "bg-stone-300 border"
-              }`}
-              onClick={() => handleClick("attachment")}
-            >
-              Attachments
-            </span>
           </>
-        )}
+        ) : null}
       </header>
 
-      {/* Main Content */}
+      {/* Tab Content */}
       <div className="min-h-[18rem] border border-stone-300 p-4">
         {isIncomingPayments && (
           <>
-            {content && <IPContentTable />}
-            {attachment && <AttachmentTable />}
+            {activeTab === "content" && <IPContentTable />}
+            {activeTab === "attachment" && <AttachmentTable />}
           </>
         )}
 
         {isOutgoingPayments && (
           <>
-            {content && <OPContentTable />}
-            {attachment && <AttachmentTable />}
+            {activeTab === "content" && <OPContentTable />}
+            {activeTab === "attachment" && <AttachmentTable />}
           </>
         )}
 
         {isPaymentMeans && (
           <>
-            {check && <CheckTable />}
-            {bankTransfer && <BankTransferTable />}
-            {cash && <CashTable />}
+            {activeTab === "check" && <CheckTable />}
+            {activeTab === "bankTransfer" && <BankTransferTable />}
+            {activeTab === "cash" && <CashTable />}
           </>
         )}
 
         {isItemMasterData && (
-          <>{generalItemMasterData && <GeneralItemMasterData />}</>
-        )}
-
-        {isBPMasterData && (
           <>
-            {general && <General />}
-            {/* {bankTransfer && <BankTransferTable />}
-            {cash && <CashTable />} */}
+            {activeTab === "generalItemMasterData" && <GeneralItemMasterData />}
           </>
         )}
+
+        {isBPMasterData && <>{activeTab === "general" && <General />}</>}
 
         {!isIncomingPayments &&
           !isOutgoingPayments &&
@@ -269,10 +202,10 @@ export default function Main() {
           !isBPMasterData &&
           !isItemMasterData && (
             <>
-              {content && <ContentTable />}
-              {logistic && <LogisticTable />}
-              {accounting && <AccountingTable />}
-              {attachment && <AttachmentTable />}
+              {activeTab === "content" && <ContentTable />}
+              {activeTab === "logistic" && <LogisticTable />}
+              {activeTab === "accounting" && <AccountingTable />}
+              {activeTab === "attachment" && <AttachmentTable />}
             </>
           )}
       </div>
